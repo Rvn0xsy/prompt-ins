@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UUID分配系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .uuid-section {
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .uuid-label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .uuid-value {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            word-break: break-all;
+            color: #333;
+            margin-bottom: 15px;
+            user-select: all;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-copy {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-copy:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-test {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-test:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+        
+        .btn-logs {
+            background: #4299e1;
+            color: white;
+        }
+        
+        .btn-logs:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(66, 153, 225, 0.4);
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #48bb78;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .notification.show {
+            display: block;
+        }
+        
+        .info-text {
+            color: #666;
+            font-size: 13px;
+            margin-top: 15px;
+            text-align: center;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 UUID分配系统</h1>
+        <p class="subtitle">每次访问为您分配一个唯一的标识</p>
+        
+        <div class="uuid-section">
+            <div class="uuid-label">您的UUID：</div>
+            <div class="uuid-value" id="uuidValue">{{ uuid }}</div>
+            
+            <div class="button-group">
+                <button class="btn-copy" onclick="copyUUID()">📋 复制UUID</button>
+                <button class="btn-test" onclick="testAuth()">🧪 测试Auth</button>
+                <button class="btn-logs" onclick="goToLogs()">📊 查看日志</button>
+            </div>
+            
+            <div class="info-text">
+                💡 提示：点击"测试Auth"按钮将使用该UUID访问认证路由<br>
+                可以在"查看日志"中查看所有访问记录
+            </div>
+        </div>
+    </div>
+    
+    <div id="notification" class="notification"></div>
+    
+    <script>
+        const uuid = "{{ uuid }}";
+        
+        function copyUUID() {
+            const uuidElement = document.getElementById('uuidValue');
+            navigator.clipboard.writeText(uuid).then(() => {
+                showNotification('✅ UUID已复制到剪贴板');
+            }).catch(() => {
+                // Fallback方法
+                const range = document.createRange();
+                range.selectNodeContents(uuidElement);
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+                document.execCommand('copy');
+                showNotification('✅ UUID已复制到剪贴板');
+            });
+        }
+        
+        function testAuth() {
+            const data = prompt('请输入要发送的数据（可选）：', 'test-data-' + Date.now());
+            if (data !== null) {
+                const authUrl = `/auth?uuid=${uuid}&data=${encodeURIComponent(data)}`;
+                fetch(authUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        showNotification('✅ Auth请求已发送，请查看日志');
+                    })
+                    .catch(error => {
+                        showNotification('❌ 请求失败');
+                        console.error(error);
+                    });
+            }
+        }
+        
+        function goToLogs() {
+            window.location.href = '/logs';
+        }
+        
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
