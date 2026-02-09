@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>访问日志</title>
+    <title>Access Logs</title>
     <style>
         * {
             margin: 0;
@@ -192,17 +192,17 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 访问日志</h1>
-            <p>记录所有/auth路由的访问日志</p>
-            <button class="btn-home" onclick="goHome()">← 返回主页</button>
+            <h1>📊 Access Logs</h1>
+            <p>Records all access logs from /auth route</p>
+            <button class="btn-home" onclick="goHome()">← Back to Home</button>
         </div>
         
         <div class="log-section">
             <div class="controls">
                 <div class="log-count">
-                    📝 总共有 <strong>{{ logs|length }}</strong> 条访问记录
+                    📝 Total: <strong>{{ logs|length }}</strong> access records
                 </div>
-                <button class="refresh-btn" onclick="location.reload()">🔄 刷新</button>
+                <button class="refresh-btn" onclick="location.reload()">🔄 Refresh</button>
             </div>
             
             {% if logs %}
@@ -210,10 +210,10 @@
                     <table class="logs-table">
                         <thead>
                             <tr>
-                                <th>时间</th>
-                                <th>IP地址</th>
+                                <th>Time</th>
+                                <th>IP Address</th>
                                 <th>UUID</th>
-                                <th>数据</th>
+                                <th>Data</th>
                                 <th>User-Agent</th>
                             </tr>
                         </thead>
@@ -232,8 +232,8 @@
                 </div>
             {% else %}
                 <div class="empty-state">
-                    <p>🚫 暂无访问记录</p>
-                    <small>返回主页并点击"测试Auth"来生成日志</small>
+                    <p>🚫 No access records yet</p>
+                    <small>Go back to home and click "Test Auth" to generate logs</small>
                 </div>
             {% endif %}
         </div>

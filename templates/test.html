@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UUID分配系统</title>
+    <title>UUID Allocation System</title>
     <style>
         * {
             margin: 0;
@@ -159,22 +159,22 @@
 </head>
 <body>
     <div class="container">
-        <h1>🔐 UUID分配系统</h1>
-        <p class="subtitle">每次访问为您分配一个唯一的标识</p>
+        <h1>🔐 UUID Allocation System</h1>
+        <p class="subtitle">A unique identifier assigned for each visit</p>
         
         <div class="uuid-section">
-            <div class="uuid-label">您的UUID：</div>
+            <div class="uuid-label">Your UUID:</div>
             <div class="uuid-value" id="uuidValue">{{ uuid }}</div>
             
             <div class="button-group">
-                <button class="btn-copy" onclick="copyUUID()">📋 复制UUID</button>
-                <button class="btn-test" onclick="testAuth()">🧪 测试Auth</button>
-                <button class="btn-logs" onclick="goToLogs()">📊 查看日志</button>
+                <button class="btn-copy" onclick="copyUUID()">📋 Copy UUID</button>
+                <button class="btn-test" onclick="testAuth()">🧪 Test Auth</button>
+                <button class="btn-logs" onclick="goToLogs()">📊 View Logs</button>
             </div>
             
             <div class="info-text">
-                💡 提示：点击"测试Auth"按钮将使用该UUID访问认证路由<br>
-                可以在"查看日志"中查看所有访问记录
+                💡 Tip: Click "Test Auth" button to access auth route with this UUID<br>
+                You can view all access records in "View Logs"
             </div>
         </div>
     </div>
@@ -187,30 +187,30 @@
         function copyUUID() {
             const uuidElement = document.getElementById('uuidValue');
             navigator.clipboard.writeText(uuid).then(() => {
-                showNotification('✅ UUID已复制到剪贴板');
+                showNotification('✅ UUID copied to clipboard');
             }).catch(() => {
-                // Fallback方法
+                // Fallback method
                 const range = document.createRange();
                 range.selectNodeContents(uuidElement);
                 const sel = window.getSelection();
                 sel.removeAllRanges();
                 sel.addRange(range);
                 document.execCommand('copy');
-                showNotification('✅ UUID已复制到剪贴板');
+                showNotification('✅ UUID copied to clipboard');
             });
         }
         
         function testAuth() {
-            const data = prompt('请输入要发送的数据（可选）：', 'test-data-' + Date.now());
+            const data = prompt('Enter data to send (optional):', 'test-data-' + Date.now());
             if (data !== null) {
                 const authUrl = `/auth?uuid=${uuid}&data=${encodeURIComponent(data)}`;
                 fetch(authUrl)
                     .then(response => response.json())
                     .then(data => {
-                        showNotification('✅ Auth请求已发送，请查看日志');
+                        showNotification('✅ Auth request sent, please check logs');
                     })
                     .catch(error => {
-                        showNotification('❌ 请求失败');
+                        showNotification('❌ Request failed');
                         console.error(error);
                     });
             }
